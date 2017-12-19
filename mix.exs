@@ -5,14 +5,18 @@ defmodule Mix.Tasks.Compile.Skylight do
 
   @shortdoc "Fetches Skylight binaries and compiles native C code"
 
-  def run(_args) do
-    if SkylightBootstrap.artifacts_already_exist? do
-      Mix.shell.info("artifacts already exist")
-      :ok = SkylightBootstrap.extract_and_move()
-      compile_c_code()
-    else
-      # TODO make this message way nicer
-      Mix.shell.error "Run `mix skylight.fetch`"
+  def run(args, try_fetch \\ true) do
+    cond do
+      SkylightBootstrap.artifacts_already_exist? ->
+        Mix.shell.info("artifacts already exist")
+        :ok = SkylightBootstrap.extract_and_move()
+        compile_c_code()
+      try_fetch ->
+        Mix.shell.info "Fetching precompiled skylight libs"
+        SkylightBootstrap.fetch
+        run(args, false)
+      true ->
+        Mix.shell.error "Couldn't fetch skylight libs"
     end
 
     :ok
