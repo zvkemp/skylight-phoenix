@@ -7,6 +7,7 @@ defmodule Mix.Tasks.Compile.Skylight do
 
   def run(_args) do
     if SkylightBootstrap.artifacts_already_exist? do
+      Mix.shell.info("artifacts already exist")
       :ok = SkylightBootstrap.extract_and_move()
       compile_c_code()
     else
@@ -40,14 +41,14 @@ defmodule Skylight.Mixfile do
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     compilers: [:skylight] ++ Mix.compilers,
+     compilers: [:skylight | Mix.compilers],
      aliases: [test: "test --no-start"],
      elixirc_paths: elixirc_paths(),
      deps: deps]
   end
 
   def application do
-    [applications: [:logger, :crypto, :uuid],
+    [applications: [:logger, :uuid],
      env: [version: "0.8.1",
            lazy_start: true,
            auth_url: "https://auth.skylight.io/agent",
@@ -68,7 +69,6 @@ defmodule Skylight.Mixfile do
      {:plug, ">= 1.0.0", optional: true},
      {:cowboy, ">= 1.0.0", optional: true},
      {:ecto, ">= 1.0.0", optional: true},
-     {:cowboy, ">= 1.0.0", only: :test},
      {:ex_doc, "~> 0.10", only: :docs}]
   end
 end

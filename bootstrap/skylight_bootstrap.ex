@@ -56,7 +56,7 @@ defmodule SkylightBootstrap do
   def artifacts_already_exist?(opts \\ []) do
     opts = default_opts(opts)
     path = Path.join(opts[:archives_dir], basename(opts))
-    File.regular?(path)
+    File.exists?(path)
   end
 
   @doc """
